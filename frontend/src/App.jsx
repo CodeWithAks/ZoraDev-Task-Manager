@@ -12,7 +12,7 @@ const App = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch('http://localhost:5000/tasks');
+      const res = await fetch('https://zoradev-task-manager.onrender.com/tasks');
       const data = await res.json();
       setTasks(data);
     } catch (error) {
@@ -23,7 +23,7 @@ const App = () => {
   //Create Task
   const createTask = async () => {
     try {
-      const res = await fetch('http://localhost:5000/tasks', { 
+      const res = await fetch('https://zoradev-task-manager.onrender.com/tasks', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json' 
@@ -35,7 +35,7 @@ const App = () => {
 
       setTitle("");
       setDescription("");
-      
+
     } catch (error) {
       console.error('Error creating task:', error);
     }
@@ -44,7 +44,7 @@ const App = () => {
   //Delete Task
   const deleteTask = async (id) => {
     try {
-      await fetch(`http://localhost:5000/tasks/${id}`, {
+      await fetch(`https://zoradev-task-manager.onrender.com/tasks/${id}`, {
         method: 'DELETE'
       });
       setTasks(tasks.filter(task => task.id !== id));
