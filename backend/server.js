@@ -23,7 +23,8 @@ app.post("/tasks", (req, res) => {
     const newTask = {
         id: currentId++,
         title,
-        description
+        description,
+        completed: false  //for toggle 
     };
     tasks.push(newTask);
     res.status(201).json(newTask);
@@ -44,6 +45,19 @@ app.delete("/tasks/:id", (req, res) => {
     res.status(200).json({
         message: "Task deleted successfully"
     });
+});
+
+//Toggle API
+app.put("/tasks/:id/toggle",(req,res) => {
+    const taskId = parseInt(req.params.id);
+    const task = tasks.find(task => task.id === taskId);
+
+    if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+    }
+    
+    task.completed = !task.completed;
+    res.json(task);
 });
 
 app.listen(port, () => {

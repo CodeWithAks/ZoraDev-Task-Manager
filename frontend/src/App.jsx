@@ -22,16 +22,22 @@ const App = () => {
 
   //Create Task
   const createTask = async () => {
+
+    if (!title || !description) {
+      alert("Please fill all fields");
+      return;
+    }
+
     try {
-      const res = await fetch('https://zoradev-task-manager.onrender.com/tasks', { 
+      const res = await fetch('https://zoradev-task-manager.onrender.com/tasks', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json' 
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ title, description }) 
+        body: JSON.stringify({ title, description })
       });
       const data = await res.json();
-      setTasks([...tasks, data]);
+      setTasks(prev => [...prev, data]);
 
       setTitle("");
       setDescription("");
@@ -47,11 +53,24 @@ const App = () => {
       await fetch(`https://zoradev-task-manager.onrender.com/tasks/${id}`, {
         method: 'DELETE'
       });
-      setTasks(tasks.filter(task => task.id !== id));
+      setTasks(prev => prev.filter(task => task.id !== id));
     } catch (error) {
       console.error('Error deleting task:', error);
     }
   }
+
+  //Toggle Task
+  const toggleTask = async (id) => {
+    try {
+      const res = await fetch(`https://zoradev-task-manager.onrender.com/tasks/${id}/toggle`, {
+        method: 'PUT'
+      });
+      const updatedTask = await res.json();
+      setTasks(prev => prev.map(task => task.id === id ? updatedTask : task));
+    } catch (error) {
+      console.error('Error toggling task:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -61,20 +80,20 @@ const App = () => {
 
         {/* Title */}
         <div className="space-y-3 mb-4">
-          <input 
-          type="text" 
-          placeholder="Title" 
-          value={title} 
-          onChange={(e) => setTitle(e.target.value)} 
-          className="w-full border p-2 rounded" />
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full border p-2 rounded" />
 
           {/* Description */}
-          <input 
-          type="text" 
-          placeholder="Description" 
-          value={description} 
-          onChange={(e) => setDescription(e.target.value)} 
-          className="w-full border p-2 rounded"/>
+          <input
+            type="text"
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full border p-2 rounded" />
 
           <button
             onClick={createTask}
@@ -83,18 +102,31 @@ const App = () => {
           </button>
         </div>
 
+
         {/* Existing Tasks */}
         <div className="space-y-3">
           {tasks.map((task) => (
             <div key={task.id} className="border p-3 rounded flex justify-between items-start" >
 
               <div>
-                <h3 className="font-semibold">{task.title}</h3>
+                <h3 className={`font-semibold ${task.completed ? "line-through text-gray-400" : ""}`}>
+                  {task.title}
+                </h3>
                 <p className="text-sm text-gray-600">
                   {task.description}
                 </p>
               </div>
 
+              {/* Toggle Button */}
+              <button
+                onClick={() => toggleTask(task.id)}
+                className="text-green-600 mr-3"
+              >
+                {task.completed ? "Undo" : "Complete"}
+              </button>
+
+
+              {/* Delete Button */}
               <button
                 onClick={() => deleteTask(task.id)}
                 className="text-red-500 hover:text-red-700" >
