@@ -32,8 +32,10 @@ const App = () => {
       });
       const data = await res.json();
       setTasks([...tasks, data]);
+
       setTitle("");
       setDescription("");
+      
     } catch (error) {
       console.error('Error creating task:', error);
     }
